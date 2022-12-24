@@ -133,7 +133,7 @@ class _MyAppState extends State<MyApp> {
                         child: ElevatedButton(
                           child: const Text("Next"),
                           onPressed: () => {
-                           // Get.to(GoingLive(index: 0,))
+                            Get.to(GoingLive(index: 0,))
                           },
                         ),
                       ),
