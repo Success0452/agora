@@ -23,8 +23,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  String channelName = "7c759f78-63f7-4984-8b9e-475e67f2916c";
-  String token = "0065741afe670ba4684aec914fb19eeb82aIAAQOQ3jBJ+6xoBnwOj9JbeZYCyHUJ6HJ+qntRHhOGi2IizPRtRbXy4UIgDUglJVfhCkYwQAAQC+Z6NjAgC+Z6NjAwC+Z6NjBAC+Z6Nj";
+  String channelName = "famouslee";
+  String token = "007eJxTYPDo09HKOhBv8OxzGCd/YJripOpKq0nNq1UON4X8LX70aoMCg6m5iWFiWqqZuUFSoomZhUliarKloUlakqFlamqShVGintnK5IZARoYorQ4GRigE8TkZ0hJz80uLc1JTGRgAn1wgfw==";
 
   int uid = 0; // uid of the local user
   var loadState = ValueNotifier(false);
@@ -60,8 +60,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
      //initializeAgora();
     // Set up an instance of Agora engine
-     setupVideoSDKEngine();
-    _addEventHandler();
+    setupVideoSDKEngine();
+     _addEventHandler();
   }
 
   // Build UI
@@ -164,7 +164,7 @@ class _MyAppState extends State<MyApp> {
                         child: ElevatedButton(
                           child: const Text("Switch"),
                           onPressed: () => {
-                           // agoraEngine.switchCamera()
+                            agoraEngine.switchCamera()
                           },
                         ),
                       ),
@@ -180,7 +180,7 @@ class _MyAppState extends State<MyApp> {
                           setState(() {
                           muted = !muted;
                           }),
-                          // agoraEngine.muteLocalAudioStream(muted)
+                           agoraEngine.muteLocalAudioStream(muted)
                           },
                         ),
                       ),
@@ -192,7 +192,7 @@ class _MyAppState extends State<MyApp> {
                             setState(() {
                               videoDisabled = !videoDisabled;
                             }),
-                            // agoraEngine.muteLocalVideoStream(true)
+                             agoraEngine.muteLocalVideoStream(true)
                           },
                         ),
                       ),
@@ -207,7 +207,7 @@ class _MyAppState extends State<MyApp> {
                             setState(() {
                               muted = !muted;
                             }),
-                           // agoraEngine.muteLocalAudioStream(muted)
+                            agoraEngine.muteLocalAudioStream(muted)
                           },
                         ),
                       ),
@@ -234,12 +234,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _videoPanel() {
-    if(_isJoined == false){
+    if(!_isJoined){
       return const Text(
         'Yet to join call',
         textAlign: TextAlign.center,
       );
-    }
+    } else
     if (_isHost) {
       // Local user joined as a host
       return AgoraVideoView(
@@ -477,54 +477,60 @@ class _MyAppState extends State<MyApp> {
     //create an instance of the Agora engine
     agoraEngine = createAgoraRtcEngine();
     await agoraEngine.initialize(const RtcEngineContext(
-        appId: "eccf72d576504a7cbe83aeef09d0c16d",
+        appId: "5741afe670ba4684aec914fb19eeb82a",
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting
     ));
 
     await agoraEngine.enableVideo();
     await agoraEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
     await agoraEngine.startPreview();
-    agoraEngine.enableWebSdkInteroperability(true);
 
     _addEventHandler();
   }
 
   void _addEventHandler() async {
 
-    // Register the event handler
-    agoraEngine.registerEventHandler(
-
-      RtcEngineEventHandler(
-        onUserStateChanged: (RtcConnection connection, int remoteUid, int elapsed) {
-          showMessage("Local user uid:${connection.localUid} joined the channel");
-          setState(() {
-            _isJoined = true;
-          });
-        },
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          showMessage("Local user uid:${connection.localUid} joined the channel");
-          setState(() {
-            _isJoined = true;
-          });
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          showMessage("Remote user uid:$remoteUid joined the channel");
-          setState(() {
-            _remoteUid = remoteUid;
-          });
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          showMessage("Remote user uid:$remoteUid left the channel");
-          setState(() {
-            _remoteUid = null;
-          });
-        },
-      ),
+    final eventHandler = RtcEngineEventHandler(
+      onError: (ErrorCodeType errorCode, String errorMessage){
+        print("error code of:${errorCode.toString()} occured with message $errorMessage");
+        showMessage("error code of:${errorCode.toString()} occured with message $errorMessage");
+      },
+      onUserStateChanged: (RtcConnection connection, int remoteUid, int elapsed) {
+        print("Local user uid:${connection.localUid} joined the channel");
+        showMessage("Local user uid:${connection.localUid} joined the channel");
+        setState(() {
+          //_isJoined = true;
+        });
+      },
+      onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        print("Local user uid:${connection.localUid} joined the channel");
+        showMessage("Local user uid:${connection.localUid} joined the channel");
+        setState(() {
+          _isJoined = true;
+        });
+      },
+      onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        print("Remote user uid:$remoteUid joined the channel");
+        showMessage("Remote user uid:$remoteUid joined the channel");
+        setState(() {
+          _remoteUid = remoteUid;
+        });
+      },
+      onUserOffline: (RtcConnection connection, int remoteUid,
+          UserOfflineReasonType reason) {
+        print("Remote user uid:$remoteUid left the channel");
+        showMessage("Remote user uid:$remoteUid left the channel");
+        setState(() {
+          _remoteUid = null;
+        });
+      },
     );
+    // Register the event handler
+    agoraEngine.registerEventHandler(eventHandler);
   }
 
   void join() async {
+    await setupVideoSDKEngine();
     // Set channel options
     ChannelMediaOptions options;
 
@@ -540,6 +546,9 @@ class _MyAppState extends State<MyApp> {
         clientRoleType: ClientRoleType.clientRoleAudience,
         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
       );
+
+       agoraEngine.enableAudio();
+       agoraEngine.setEnableSpeakerphone(true);
     }
 
     await agoraEngine.joinChannel(
@@ -549,9 +558,7 @@ class _MyAppState extends State<MyApp> {
       uid: uid,
     );
 
-
-    _addEventHandler();
-
+     _addEventHandler();
   }
 
   void leave() {

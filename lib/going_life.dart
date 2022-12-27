@@ -324,15 +324,10 @@ class _GoingLiveState extends State<GoingLive> {
                         fit: BoxFit.contain,
                         color: Colors.black
                     ) :
-                    Container(
-                      height: 5,
-                      width: 5,
-                      padding: const EdgeInsets.all(22),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                      ),
-                    ),
+                    const Icon(
+                      Icons.stop,
+                      color: Colors.red,
+                    )
                   ),
                 ),
               ),
